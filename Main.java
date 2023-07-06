@@ -20,11 +20,7 @@ public class Main {
 
     public static boolean isPalindromic(long num) {
         String strNum = Long.toString(num);
-        StringBuilder reversedNum = new StringBuilder();
-
-        for (int i = strNum.length() - 1; i >= 0; i--) {
-            reversedNum.append(strNum.charAt(i));
-        }
+        StringBuilder reversedNum = new StringBuilder(strNum).reverse();
 
         return strNum.contentEquals(reversedNum);
     }
