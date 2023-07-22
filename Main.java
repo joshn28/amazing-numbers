@@ -3,6 +3,22 @@ package numbers;
 import java.util.Scanner;
 public class Main {
 
+    public static boolean isSpy(long num) {
+        String[] digits = String.valueOf(num).split("");
+
+        long sum = 0;
+        long product = 0;
+
+        for (int i = 0; i < digits.length; i++) {
+            long digit = Long.parseLong(digits[i]);
+
+            sum += digit;
+            product += digit;
+        }
+
+        return sum == product;
+    }
+
     public static boolean isGapful(long num) {
         String strNum = Long.toString(num);
 
@@ -71,31 +87,35 @@ public class Main {
                 - enter two natural numbers to obtain the properties of the list:
                   * the first parameter represents a starting number;
                   * the second parameter shows how many consecutive numbers are to be printed;
+                - two natural numbers and a property to search for;
                 - separate the parameters with one space;
                 - enter 0 to exit.
                 %n""");
 
         Scanner scanner = new Scanner(System.in);
+        String[] properties = {"BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "EVEN", "ODD"};
 
         while (true) {
             System.out.print("Enter a request: ");
 
-            String[] nums = scanner.nextLine().split(" ");
+            String[] inputs = scanner.nextLine().split(" ");
 
-            if (nums.length > 1) {
-                long firstNum = Long.parseLong(nums[0]);
-                long secondNum = Long.parseLong(nums[1]);
+            if (inputs.length > 1) {
+                long firstNum = Long.parseLong(inputs[0]);
+                long secondNum = Long.parseLong(inputs[1]);
 
                 if (firstNum < 0) {
                     System.out.printf("%nThe first parameter should be a natural number or zero.%n%n");
                 } else if (secondNum < 0) {
                     System.out.printf("%nThe second parameter should be a natural number.%n%n");
+                } else if (inputs.length == 3) {
+                    String property = inputs[2];
                 } else {
                     System.out.println();
                     showNumPropertiesList(firstNum, secondNum);
                 }
             } else {
-                long num = Long.parseLong(nums[0]);
+                long num = Long.parseLong(inputs[0]);
 
                 if (num > 0) {
                     showNumProperties(num);
