@@ -1,19 +1,20 @@
 package numbers;
 
 import java.util.Scanner;
+import java.util.Arrays;
 public class Main {
 
     public static boolean isSpy(long num) {
         String[] digits = String.valueOf(num).split("");
 
         long sum = 0;
-        long product = 0;
+        long product = 1;
 
-        for (int i = 0; i < digits.length; i++) {
-            long digit = Long.parseLong(digits[i]);
+        for (String s : digits) {
+            long digit = Long.parseLong(s);
 
             sum += digit;
-            product += digit;
+            product *= digit;
         }
 
         return sum == product;
@@ -49,8 +50,30 @@ public class Main {
         info.append(Long.toString(num).contains("0") ? ", duck" : "");
         info.append(isPalindromic(num) ? ", palindromic" : "");
         info.append(isGapful(num) ? ", gapful" : "");
+        info.append(isSpy(num) ? ", spy" : "");
 
         System.out.println(info);
+    }
+
+    public static Boolean numHasProp(long num, String property) {
+        switch (property) {
+            case "BUZZ":
+                return num % 7 == 0 || num % 10 == 7;
+            case "DUCK":
+                return Long.toString(num).contains("0");
+            case "PALINDROMIC":
+                return isPalindromic(num);
+            case "GAPFUL":
+                return isGapful(num);
+            case "SPY":
+                return isSpy(num);
+            case "EVEN":
+                return num % 2 == 0;
+            case "ODD":
+                return num % 2 != 0;
+            default:
+                return false;
+        }
     }
 
     public static void showNumPropertiesList(long start, long end) {
@@ -60,6 +83,27 @@ public class Main {
         System.out.println();
     }
 
+    public static void showNumPropertiesList(long start, long end, String property) {
+        String[] properties = {"BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "EVEN", "ODD"};
+        property = property.toUpperCase();
+
+        if (Arrays.asList(properties).contains(property)) {
+            for (long i = 0; i < end;) {
+                if (numHasProp(start, property)) {
+                    printInfo(start);
+                    i++;
+                }
+                start++;
+            }
+            System.out.println();
+        } else {
+            System.out.printf("""
+                    %nThe property [%s] is wrong.
+                    Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, EVEN, ODD]
+                    %n""", property);
+        }
+    }
+
     public static void showNumProperties(long num) {
         boolean even = num % 2 == 0;
         boolean odd = num % 2 != 0;
@@ -67,6 +111,7 @@ public class Main {
         boolean duck = Long.toString(num).contains("0");
         boolean palindromic = isPalindromic(num);
         boolean gapful = isGapful(num);
+        boolean spy = isSpy(num);
 
         System.out.printf("""
                 %nProperties of %,d
@@ -74,9 +119,10 @@ public class Main {
                         duck: %b
                  palindromic: %b
                       gapful: %b
+                         spy: %b
                         even: %b
                          odd: %b
-                %n""", num, buzz, duck, palindromic, gapful, even, odd);
+                %n""", num, buzz, duck, palindromic, gapful, spy, even, odd);
     }
 
     public static void main(String[] args) {
@@ -93,7 +139,6 @@ public class Main {
                 %n""");
 
         Scanner scanner = new Scanner(System.in);
-        String[] properties = {"BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "EVEN", "ODD"};
 
         while (true) {
             System.out.print("Enter a request: ");
@@ -110,11 +155,18 @@ public class Main {
                     System.out.printf("%nThe second parameter should be a natural number.%n%n");
                 } else if (inputs.length == 3) {
                     String property = inputs[2];
+                    System.out.println();
+                    showNumPropertiesList(firstNum, secondNum, property);
                 } else {
                     System.out.println();
                     showNumPropertiesList(firstNum, secondNum);
                 }
             } else {
+                if (!inputs[0].matches("\\d+")) {
+                    System.out.printf("%nThe first parameter should be a natural number or zero.%n%n");
+                    continue;
+                }
+
                 long num = Long.parseLong(inputs[0]);
 
                 if (num > 0) {
