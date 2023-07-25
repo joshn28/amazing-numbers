@@ -43,37 +43,28 @@ public class Main {
     }
 
     public static void printInfo(long num) {
-        StringBuilder info = new StringBuilder(num + " is ");
 
-        info.append(num % 2 == 0 ? "even" : "odd");
-        info.append(num % 7 == 0 || num % 10 == 7 ? ", buzz" : "");
-        info.append(Long.toString(num).contains("0") ? ", duck" : "");
-        info.append(isPalindromic(num) ? ", palindromic" : "");
-        info.append(isGapful(num) ? ", gapful" : "");
-        info.append(isSpy(num) ? ", spy" : "");
+        String info = num + " is " + (num % 2 == 0 ? "even" : "odd") +
+                (num % 7 == 0 || num % 10 == 7 ? ", buzz" : "") +
+                (Long.toString(num).contains("0") ? ", duck" : "") +
+                (isPalindromic(num) ? ", palindromic" : "") +
+                (isGapful(num) ? ", gapful" : "") +
+                (isSpy(num) ? ", spy" : "");
 
         System.out.println(info);
     }
 
     public static Boolean numHasProp(long num, String property) {
-        switch (property) {
-            case "BUZZ":
-                return num % 7 == 0 || num % 10 == 7;
-            case "DUCK":
-                return Long.toString(num).contains("0");
-            case "PALINDROMIC":
-                return isPalindromic(num);
-            case "GAPFUL":
-                return isGapful(num);
-            case "SPY":
-                return isSpy(num);
-            case "EVEN":
-                return num % 2 == 0;
-            case "ODD":
-                return num % 2 != 0;
-            default:
-                return false;
-        }
+        return switch (property) {
+            case "BUZZ" -> num % 7 == 0 || num % 10 == 7;
+            case "DUCK" -> Long.toString(num).contains("0");
+            case "PALINDROMIC" -> isPalindromic(num);
+            case "GAPFUL" -> isGapful(num);
+            case "SPY" -> isSpy(num);
+            case "EVEN" -> num % 2 == 0;
+            case "ODD" -> num % 2 != 0;
+            default -> false;
+        };
     }
 
     public static void showNumPropertiesList(long start, long end) {
