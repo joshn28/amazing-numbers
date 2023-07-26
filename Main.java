@@ -1,12 +1,22 @@
 package numbers;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Arrays;
 public class Main {
 
-    static final String[] PROPERTIES = {
-            "BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "EVEN", "ODD", "SUNNY", "SQUARE", "JUMPING"
-    };
+    static final String PROPS = "even, odd, buzz, duck, palindromic, gapful, spy, square, sunny, jumping";
+
+    public static String[] getProperties(String[] inputs) {
+        String[] properties = new String[inputs.length - 2];
+        int start = 2;
+
+        for (int i = 0; i < properties.length; i++) {
+            properties[i] = inputs[start + i].toLowerCase();
+        }
+
+        return properties;
+    }
 
     public static boolean isJumping(long num) {
         String[] numbers = Long.toString(num).split("");
@@ -65,111 +75,103 @@ public class Main {
         return strNum.contentEquals(reversedNum);
     }
 
-    public static void printInfo(long num) {
+    public static String getNumProps(long num) {
 
-        String info = num + " is " + (num % 2 == 0 ? "even" : "odd") +
+        return num + " is " + (num % 2 == 0 ? "even" : "odd") +
                 (num % 7 == 0 || num % 10 == 7 ? ", buzz" : "") +
                 (Long.toString(num).contains("0") ? ", duck" : "") +
                 (isPalindromic(num) ? ", palindromic" : "") +
                 (isGapful(num) ? ", gapful" : "") +
                 (isSpy(num) ? ", spy" : "") +
                 (isSquare(num) ? ", square": "") +
-                (isSquare(num + 1) ? ", sunny" : "");
-
-        System.out.println(info);
+                (isSquare(num + 1) ? ", sunny" : "") +
+                (isJumping(num) ? ", jumping" : "");
     }
 
-    public static Boolean propsAreMutuallyExclusive(String property1, String property2) {
-        property1 = property1.toUpperCase();
-        property2 = property2.toUpperCase();
+    public static Boolean propsAreMutuallyExclusive(String... properties) {
+        if (properties.length > 1) {
+            if (Arrays.toString(properties).contains("even") && Arrays.toString(properties).contains("odd")) {
+                return true;
+            } else if (Arrays.toString(properties).contains("duck")
+                    && Arrays.toString(properties).contains("spy")) {
+                return true;
+            } else return Arrays.toString(properties).contains("sunny")
+                    && Arrays.toString(properties).contains("square");
+        }
 
-        Boolean firstCase = property1.equals("EVEN") && property2.equals("ODD")
-                            || property1.equals("ODD") && property2.equals("EVEN");
-
-        Boolean secondCase = property1.equals("DUCK") && property2.equals("SPY")
-                             || property1.equals("SPY") && property2.equals("DUCK");
-
-        Boolean thirdCase = property1.equals("SUNNY") && property2.equals("SQUARE")
-                            || property1.equals("SQUARE") && property2.equals("SUNNY");
-
-        return firstCase || secondCase || thirdCase;
+        return false;
     }
 
-    public static Boolean numHasProp(long num, String property) {
-        return switch (property) {
-            case "BUZZ" -> num % 7 == 0 || num % 10 == 7;
-            case "DUCK" -> Long.toString(num).contains("0");
-            case "PALINDROMIC" -> isPalindromic(num);
-            case "GAPFUL" -> isGapful(num);
-            case "SPY" -> isSpy(num);
-            case "SQUARE" -> isSquare(num);
-            case "SUNNY" -> isSquare(num + 1);
-            case "EVEN" -> num % 2 == 0;
-            case "ODD" -> num % 2 != 0;
-            default -> false;
-        };
+    public static ArrayList<String> getInvalidProps(String... properties) {
+        ArrayList<String> invalidProps = new ArrayList<>();
+
+        for (String prop: properties) {
+            if (!PROPS.contains(prop)) {
+                invalidProps.add(prop);
+            }
+        }
+
+        return invalidProps;
+    }
+
+    public static Boolean propsAreValid(String... properties) {
+        ArrayList<String> invalidProps = getInvalidProps(properties);
+
+        if (invalidProps.size() == 1) {
+            System.out.printf("""
+                    The property %s is wrong.
+                    Available properties: %s
+                    %n""", invalidProps, PROPS);
+            return false;
+        } else if (invalidProps.size() > 1) {
+            System.out.printf("""
+                    The properties %s are wrong.
+                    Available properties: %s
+                    %n""", invalidProps, PROPS);
+            return false;
+        }
+
+        if (propsAreMutuallyExclusive(properties)) {
+            System.out.printf("""
+                    The request contains mutually exclusive properties: %s
+                    There are no numbers with these properties.
+                    %n""", Arrays.toString(properties));
+            return false;
+        }
+
+        return true;
+    }
+
+    public static Boolean numHasProps(long num, String... properties) {
+        for (String property : properties) {
+            if (!getNumProps(num).contains(property.toLowerCase())) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static void showNumPropertiesList(long start, long end) {
         for (long i = 0; i < end; i++) {
-            printInfo(start++);
+            System.out.println(getNumProps(start++));
         }
         System.out.println();
     }
 
-    public static void showNumPropertiesList(long start, long end, String property) {
-        property = property.toUpperCase();
-
-        if (Arrays.asList(PROPERTIES).contains(property)) {
-            for (long i = 0; i < end;) {
-                if (numHasProp(start, property)) {
-                    printInfo(start);
-                    i++;
-                }
-                start++;
-            }
-            System.out.println();
-        } else {
-            System.out.printf("""
-                    %nThe property [%s] is wrong.
-                    Available properties: %s
-                    %n""", property, Arrays.toString(PROPERTIES));
+    public static void showNumPropertiesList(long start, long end, String... properties) {
+        if (!propsAreValid(properties)) {
+            return;
         }
-    }
 
-    public static void showNumPropertiesList(long start, long end, String property1, String property2) {
-        property1 = property1.toUpperCase();
-        property2 = property2.toUpperCase();
-
-        if (Arrays.asList(PROPERTIES).contains(property1) && Arrays.asList(PROPERTIES).contains(property2)) {
-            if (property1.equals(property2)) {
-                showNumPropertiesList(start, end, property1);
-            } else if (!propsAreMutuallyExclusive(property1, property2)) {
-                for (long i = 0; i < end;) {
-                    if (numHasProp(start, property1) && numHasProp(start, property2)) {
-                        printInfo(start);
-                        i++;
-                    }
-                    start++;
-                }
-                System.out.println();
-            } else {
-                System.out.printf("""
-                        The request contains mutually exclusive properties: [%s, %s]
-                        There are no numbers with these properties.
-                        %n""", property1, property2);
+        for (long i = 0; i < end;) {
+            if (numHasProps(start, properties)) {
+                System.out.println(getNumProps(start));
+                i++;
             }
-        } else if (!Arrays.asList(PROPERTIES).contains(property1) && !Arrays.asList(PROPERTIES).contains(property2)){
-            System.out.printf("""
-                    The properties [%s, %s] are wrong.
-                    Available properties: %s
-                    %n""", property1, property2, Arrays.toString(PROPERTIES));
-        } else {
-            System.out.printf("""
-                    The property [%s, %s] is wrong.
-                    Available properties: %s
-                    %n""", property1, property2, Arrays.toString(PROPERTIES));
+            start++;
         }
+        System.out.println();
     }
 
     public static void showNumProperties(long num) {
@@ -182,6 +184,7 @@ public class Main {
         boolean spy = isSpy(num);
         boolean square = isSquare(num);
         boolean sunny = isSquare(num + 1);
+        boolean jumping = isJumping(num);
 
         System.out.printf("""
                 %nProperties of %,d
@@ -192,9 +195,10 @@ public class Main {
                          spy: %b
                       square: %b
                        sunny: %b
+                     jumping: %b
                         even: %b
                          odd: %b
-                %n""", num, buzz, duck, palindromic, gapful, spy, square, sunny, even, odd);
+                %n""", num, buzz, duck, palindromic, gapful, spy, square, sunny, jumping, even, odd);
     }
 
     public static void main(String[] args) {
@@ -226,15 +230,10 @@ public class Main {
                     System.out.printf("%nThe first parameter should be a natural number or zero.%n%n");
                 } else if (secondNum < 0) {
                     System.out.printf("%nThe second parameter should be a natural number.%n%n");
-                } else if (inputs.length == 3) {
-                    String property = inputs[2];
+                } else if (inputs.length > 2) {
+                    String[] properties = getProperties(inputs);
                     System.out.println();
-                    showNumPropertiesList(firstNum, secondNum, property);
-                } else if (inputs.length == 4) {
-                    String property1 = inputs[2];
-                    String property2 = inputs[3];
-                    System.out.println();
-                    showNumPropertiesList(firstNum, secondNum, property1, property2);
+                    showNumPropertiesList(firstNum, secondNum, properties);
                 } else {
                     System.out.println();
                     showNumPropertiesList(firstNum, secondNum);
