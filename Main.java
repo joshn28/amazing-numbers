@@ -115,13 +115,27 @@ public class Main {
 
     public static Boolean propsAreMutuallyExclusive(String... properties) {
         if (properties.length > 1) {
-            if (Arrays.toString(properties).contains("even") && Arrays.toString(properties).contains("odd")) {
+            if (Arrays.asList(properties).contains("even") && Arrays.asList(properties).contains("odd")) {
                 return true;
-            } else if (Arrays.toString(properties).contains("duck")
-                    && Arrays.toString(properties).contains("spy")) {
+            } else if (Arrays.asList(properties).contains("-even") && Arrays.asList(properties).contains("-odd")) {
                 return true;
-            } else return Arrays.toString(properties).contains("sunny")
-                    && Arrays.toString(properties).contains("square");
+            } else if (Arrays.asList(properties).contains("duck")
+                    && Arrays.asList(properties).contains("spy")) {
+                return true;
+            } else if (Arrays.asList(properties).contains("happy")
+                    && Arrays.asList(properties).contains("sad")) {
+                return true;
+            } else if (Arrays.asList(properties).contains("sunny")
+                    && Arrays.asList(properties).contains("square")) {
+                return true;
+            }
+        }
+
+        for (String prop : properties) {
+            if (prop.charAt(0) == '-' && Arrays.asList(properties).contains(prop)
+                && Arrays.asList(properties).contains(prop.substring(1))) {
+                return true;
+            }
         }
 
         return false;
@@ -131,6 +145,10 @@ public class Main {
         ArrayList<String> invalidProps = new ArrayList<>();
 
         for (String prop: properties) {
+            if (prop.charAt(0) == '-') {
+                prop = prop.substring(1);
+            }
+
             if (!PROPS.contains(prop)) {
                 invalidProps.add(prop);
             }
@@ -169,7 +187,11 @@ public class Main {
 
     public static Boolean numHasProps(long num, String... properties) {
         for (String property : properties) {
-            if (!getNumProps(num).contains(property.toLowerCase())) {
+            if (property.charAt(0) == '-') {
+                if (getNumProps(num).contains(property.substring(1).toLowerCase())) {
+                    return false;
+                }
+            } else if (!getNumProps(num).contains(property.toLowerCase())) {
                 return false;
             }
         }
@@ -240,6 +262,7 @@ public class Main {
                   * the second parameter shows how many consecutive numbers are to be processed;
                 - two natural numbers and a property to search for;
                 - two natural numbers and two properties to search for;
+                - a property preceded by minus must not be present in numbers;
                 - separate the parameters with one space;
                 - enter 0 to exit.
                 %n""");
