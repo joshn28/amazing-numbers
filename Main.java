@@ -5,7 +5,30 @@ import java.util.Scanner;
 import java.util.Arrays;
 public class Main {
 
-    static final String PROPS = "even, odd, buzz, duck, palindromic, gapful, spy, square, sunny, jumping";
+    static final String PROPS = "even, odd, buzz, duck, palindromic, gapful, spy, square, sunny, jumping, happy, sad";
+
+    public static boolean isHappy(long num) {
+        ArrayList<Long> sequence = new ArrayList<>();
+        sequence.add(num);
+
+        while (true) {
+            String[] digits = Long.toString(num).split("");
+            long sum = 0;
+
+            for (String digit : digits) {
+                sum += Long.parseLong(digit) * Long.parseLong(digit);
+            }
+
+            if (sum == 1) {
+                return true;
+            } else if (sequence.contains(sum)) {
+                return false;
+            }
+
+            sequence.add(sum);
+            num = sum;
+        }
+    }
 
     public static String[] getProperties(String[] inputs) {
         String[] properties = new String[inputs.length - 2];
@@ -85,7 +108,9 @@ public class Main {
                 (isSpy(num) ? ", spy" : "") +
                 (isSquare(num) ? ", square": "") +
                 (isSquare(num + 1) ? ", sunny" : "") +
-                (isJumping(num) ? ", jumping" : "");
+                (isJumping(num) ? ", jumping" : "") +
+                (isHappy(num) ?  ", happy" : "") +
+                (!isHappy(num) ?  ", sad" : "");
     }
 
     public static Boolean propsAreMutuallyExclusive(String... properties) {
@@ -185,6 +210,8 @@ public class Main {
         boolean square = isSquare(num);
         boolean sunny = isSquare(num + 1);
         boolean jumping = isJumping(num);
+        boolean happy = isHappy(num);
+        boolean sad = !isHappy(num);
 
         System.out.printf("""
                 %nProperties of %,d
@@ -196,9 +223,11 @@ public class Main {
                       square: %b
                        sunny: %b
                      jumping: %b
+                       happy: %b
+                         sad: %b
                         even: %b
                          odd: %b
-                %n""", num, buzz, duck, palindromic, gapful, spy, square, sunny, jumping, even, odd);
+                %n""", num, buzz, duck, palindromic, gapful, spy, square, sunny, jumping, happy, sad, even, odd);
     }
 
     public static void main(String[] args) {
