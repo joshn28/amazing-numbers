@@ -4,6 +4,25 @@ import java.util.Scanner;
 import java.util.Arrays;
 public class Main {
 
+    static final String[] PROPERTIES = {
+            "BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "EVEN", "ODD", "SUNNY", "SQUARE", "JUMPING"
+    };
+
+    public static boolean isJumping(long num) {
+        String[] numbers = Long.toString(num).split("");
+
+        for (int i = 0; i < numbers.length - 1; i++) {
+            long num1 = Long.parseLong(numbers[i]);
+            long num2 = Long.parseLong(numbers[i+1]);
+
+            if (Math.abs(num1 - num2) != 1) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public static boolean isSquare(long num) {
         return Math.sqrt(num) == (int) Math.sqrt(num);
     }
@@ -99,10 +118,9 @@ public class Main {
     }
 
     public static void showNumPropertiesList(long start, long end, String property) {
-        String[] properties = {"BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "EVEN", "ODD", "SUNNY", "SQUARE"};
         property = property.toUpperCase();
 
-        if (Arrays.asList(properties).contains(property)) {
+        if (Arrays.asList(PROPERTIES).contains(property)) {
             for (long i = 0; i < end;) {
                 if (numHasProp(start, property)) {
                     printInfo(start);
@@ -114,17 +132,16 @@ public class Main {
         } else {
             System.out.printf("""
                     %nThe property [%s] is wrong.
-                    Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, EVEN, ODD, SUNNY, SQUARE]
-                    %n""", property);
+                    Available properties: %s
+                    %n""", property, Arrays.toString(PROPERTIES));
         }
     }
 
     public static void showNumPropertiesList(long start, long end, String property1, String property2) {
-        String[] properties = {"BUZZ", "DUCK", "PALINDROMIC", "GAPFUL", "SPY", "EVEN", "ODD", "SUNNY", "SQUARE"};
         property1 = property1.toUpperCase();
         property2 = property2.toUpperCase();
 
-        if (Arrays.asList(properties).contains(property1) && Arrays.asList(properties).contains(property2)) {
+        if (Arrays.asList(PROPERTIES).contains(property1) && Arrays.asList(PROPERTIES).contains(property2)) {
             if (property1.equals(property2)) {
                 showNumPropertiesList(start, end, property1);
             } else if (!propsAreMutuallyExclusive(property1, property2)) {
@@ -142,16 +159,16 @@ public class Main {
                         There are no numbers with these properties.
                         %n""", property1, property2);
             }
-        } else if (!Arrays.asList(properties).contains(property1) && !Arrays.asList(properties).contains(property2)){
+        } else if (!Arrays.asList(PROPERTIES).contains(property1) && !Arrays.asList(PROPERTIES).contains(property2)){
             System.out.printf("""
                     The properties [%s, %s] are wrong.
-                    Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, EVEN, ODD, SUNNY, SQUARE]
-                    %n""", property1, property2);
+                    Available properties: %s
+                    %n""", property1, property2, Arrays.toString(PROPERTIES));
         } else {
             System.out.printf("""
                     The property [%s, %s] is wrong.
-                    Available properties: [BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, EVEN, ODD, SUNNY, SQUARE]
-                    %n""", property1, property2);
+                    Available properties: %s
+                    %n""", property1, property2, Arrays.toString(PROPERTIES));
         }
     }
 
@@ -187,7 +204,7 @@ public class Main {
                 - enter a natural number to know its properties;
                 - enter two natural numbers to obtain the properties of the list:
                   * the first parameter represents a starting number;
-                  * the second parameter shows how many consecutive numbers are to be printed;
+                  * the second parameter shows how many consecutive numbers are to be processed;
                 - two natural numbers and a property to search for;
                 - two natural numbers and two properties to search for;
                 - separate the parameters with one space;
